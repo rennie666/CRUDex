@@ -49,7 +49,7 @@ namespace CRUDex.Controllers
 
             if(item == null)
             {
-                return BadRequest("There is no such Book");
+                return BadRequest("Book with the given ID does not exist.");
             }
 
             return Ok(item);
@@ -58,12 +58,13 @@ namespace CRUDex.Controllers
         [HttpPost]
         public IActionResult CreateBook(CreateEditBookDto bookDto)
         {
-            
 
-            if(_context.Books.Any(a => a.AuthorId != bookDto.AuthorId))
+
+            if (!_context.Authors.Any(a => a.Id == bookDto.AuthorId))
             {
-                return BadRequest("There is no such author");
+                return BadRequest("Author with the given ID does not exist.");
             }
+
 
             var item = new Book
             {
@@ -92,16 +93,16 @@ namespace CRUDex.Controllers
         public IActionResult EditBook(int id, CreateEditBookDto bookDto)
         {
             var item = _context.Books.FirstOrDefault(i => i.Id == id);
-            if (item == null)
+            if (item is null)
             {
-                return BadRequest("There is no such book");
+                return BadRequest("Book with the given ID does not exist.");
             }
 
             if (bookDto.AuthorId != 0 && !_context.Authors.Any(a => a.Id == bookDto.AuthorId))
             {
                 return BadRequest("Author with the given ID does not exist.");
             }
-            //ne raboti mnogo
+            
             //Proverqvame dali e vuvedena stoinost ? ako ne e ostava starata : ako e vzimame novata
             item.Title = bookDto.Title.IsNullOrEmpty() ? item.Title : bookDto.Title;
             item.Description = bookDto.Description.IsNullOrEmpty() ? item.Description : bookDto.Description; 
@@ -128,7 +129,7 @@ namespace CRUDex.Controllers
             var item = _context.Books.Include(i => i.BookAuthor).FirstOrDefault(b => b.Id == id);
             if (item == null)
             {
-                return BadRequest("There is no such book");
+                return BadRequest("Book with the given ID does not exist.");
             }
 
             _context.Books.Remove(item);
